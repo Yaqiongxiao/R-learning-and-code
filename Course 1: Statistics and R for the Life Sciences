@@ -1,0 +1,126 @@
+## Week 3 Inference
+
+# Inference I
+
+
+#Q 1.1
+
+
+
+  
+  
+
+## Inference II
+
+babies = read.table("babies.txt", header=TRUE)
+bwt.nonsmoke = babies$bwt[babies$smoke==0]
+bwt.smoke = babies$bwt[babies$smoke==1]
+
+# QUESTION 1.1
+# What is the average length of the confidence interval?
+
+conf <- function (N=30) {
+  S1 <- sample(bwt.nonsmoke,N)
+  S2 <- sample(bwt.smoke,N)
+  mytest <- t.test(S1,S2)
+  #cont_conf <- mytest$conf.int[2]-mytest$conf.int[1]
+  return(mytest$conf.int[2]-mytest$conf.int[1])
+}
+  mean(replicate(1000,conf(N)))
+  
+#QUESTION 1.2
+#How often (what proportion of times) did the confidence intervals contain the population-level difference? 
+N=30
+diff <- function () {
+    S1 <- sample(bwt.nonsmoke,N)
+    S2 <- sample(bwt.smoke,N)
+    popdiff <- mean(bwt.nonsmoke)-mean(bwt.smoke)
+    mytest <- t.test(S1,S2)
+    popdiff<mytest$conf.int[2] & popdiff>mytest$conf.int[1]
+}
+
+  mean(replicate(1000,diff()))
+  
+  # Take a random sample of N=15 measurements from each of the smoking (bwt.smoke) and nonsmoking (bwt.nonsmoke) groups. Then perform a t-test and compare the p-value to a significance level alpha. Do this 1,000 times. Decide whether or not to reject the null hypothesis based on three significance levels alpha=0.1, alpha = 0.05, alpha=0.01. For each experiment, keep track of whether you correctly rejected the null hypothesis at each of these significance levels (thus, each of the 1,000 experiments should produce 3 numbers to keep track of). For each significance level, in what proportion of the experiments did you correctly reject the null hypothesis?
+
+N=15
+reject <- function(N,alpha){
+  sample.bwt.nonsmoke <- sample(bwt.nonsmoke,N)
+  sample.bwt.smoke <- sample(bwt.smoke,N)
+  pval <- t.test(sample.bwt.nonsmoke,sample.bwt.smoke)$p.value
+  ifelse(pval < alpha,1,0)
+}
+
+  #QUESTION 2.1
+  #What is the power at alpha=0.1?
+mean(replicate(1000,reject(N,0.1)))
+
+  #QUESTION 2.1
+  #What is the power at alpha=0.05?
+mean(replicate(1000,reject(N,0.05)))
+
+ #QUESTION 2.1
+#What is the power at alpha=0.01?
+mean(replicate(1000,reject(N,0.01)))
+
+#QUESTION 2.4  
+#We will deal with the important of multiple hypothesis testing in a later course, but for now, consider this question that is very near to your heart. Suppose that one of the homework question is graded based on whether the result you reported falls within a exact 99% interval around a true value. Now suppose that 2,000 students complete the assignment, and assume that all students execute the simulation correctly. What is the expected number of student responses that would be marked wrong simply by chance?
+
+
+d = read.csv("assoctest.csv")
+#QUESTION 3.1
+#Compute the Chi-square test for the association of genotype with case/control status (using the table() function and the chisq.test() function). Examine the table to see if it look enriched for association by eye. What is the X-squared statistic?
+table(d)
+ctest1 <- chisq.test(table(d))
+ctest1
+
+#QUESTION 3.2  
+#Compute the Fisher's exact test ( fisher.test() ) for the same table. What is the p-value?
+fisher.test(table(d))
+
+##Inference III
+#Monte Carlo Simulation
+babies = read.table("babies.txt", header=TRUE)
+bwt.nonsmoke=babies$bwt[babies$smoke==0]
+pop.var <- var(bwt.nonsmoke)
+
+#QUESTION 1.1
+#How often (what proportion of simulations) is the sample variance greater than 1.5 times the population variance? 
+
+vars <- function(N){
+S1.ns <- sample(bwt.nonsmoke,N)
+return(var(S1.ns))
+}
+
+vars_all <- replicate(1000,vars(10))
+mean(vars_all>1.5*pop.var)
+
+#Now use a sample size of 50. How often (what proportion) is the sample variance larger than 1.5 times the population variance?
+vars_all <- replicate(1000,vars(50))
+mean(vars_all>1.5*pop.var)
+
+#PLOT OF SAMPLE VARIANCE AND POPULATION VARIANCE
+
+sample.size = 2:400
+var.estimate = sapply(sample.size, function(n) var(sample(bwt.nonsmoke, n)))
+plot(sample.size, var.estimate)
+abline(h=pop.var, col="blue")
+
+#permutation
+set.seed(0)
+N <- 50
+smokers <- sample(babies$bwt[babies$smoke==1], N)
+nonsmokers <- sample(babies$bwt[babies$smoke==0], N)
+obs <- mean(smokers) - mean(nonsmokers)
+avgdiff <- replicate(1000, {
+    all <- sample(c(smokers,nonsmokers))
+    smokersstar <- all[1:N]
+    nonsmokersstar <- all[(N+1):(2*N)]
+    return(mean(smokersstar) - mean(nonsmokersstar))
+})
+
+
+
+
+
+ 
