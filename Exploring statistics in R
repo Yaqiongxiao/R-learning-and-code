@@ -1,2 +1,89 @@
 ####https://courses.edx.org/courses/course-v1:KIx+KIexploRx+2015T3/courseware/e9fe0de80a644ab2b86e6f7995a2828b/2ad5e855e6234b08ae89a26ab47e5e02/
 
+#############
+week 1
+###############
+
+#read data from local
+a <- read.table('List_P_3D_data.csv.xls',header = T,sep = ';')  
+View(a)
+head(a)
+tail(a)
+names(a)
+str(a)
+dim(a)
+measurements <- c('EDV','ESV','SV','EF')
+paste(measurements,'3D',sep = '.')   #creat a new name for the dataset
+c(paste(measurements,'3D',sep = '.'), paste(measurements,'2D',sep = '.')) #creat a new name
+names(a) <- c('subject',paste(measurements,'3D',sep = '.'))
+
+#remove rows and columns with negative indexing (drop lines or rows)
+a <- a[-31:-33,-10:-12]  #remove the lines from 31 to 33, rows from 10 to 12
+
+# how to download data from website
+install.packages('RCurl')  #download data from other types of links
+require(RCurl)
+test1 <- read.csv('http://www.hscic.gov.uk/catalogue/PUB14142/nhs-dent-stat-eng-2013-14-thir-quar-anx4u-UDA-CCG.csv')
+str(test1)
+boxplot(test1$Total~test1$Patient_Type)
+boxplot(test1$Urgent_Occasional)
+
+webq <- readLines('http://www.ncbi.nlm.nih.gov/gds/?term=diabetes')  #read webpages
+head(webq)
+
+grep('diabetes',webq)
+webq[grep('diabetes',webq)]
+date()  #save the date when the data was downloaded
+
+#an alternative way
+url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv"
+filename <- "femaleMiceWeights.csv"
+library(downloader)
+if (!file.exists(filename)) download(url, filename)
+dat <- read.csv(filename)
+
+obesity <- read.csv('http://www.hscic.gov.uk/catalogue/PUB13648/Obes-phys-acti-diet-eng-2014-tab_CSV.csv',skip = 4, nrows = 12) 
+#file to skip before beginning to read data.
+str(obesity)
+obesity
+#coma seperating, transform by using global substitute (gsub), from factor to character, then from character to numeric
+obesity$Males <- as.numeric(as.character(gsub(',','', obesity$Males)))
+obesity$Females <- as.numeric(as.character(gsub(',','', obesity$Females)))
+obesity <- obesity[-1,c(-2,-5:-12)]  #drop the first row and 5 to 12 columns
+obesity
+
+body <- read.table('http://www.amstat.org/publications/jse/datasets/body.dat.txt')
+dim(body)
+str(body)
+BodyMeasurements <- c("Biacromial_diameter","Biiliac_diameter","Bitrochanteric_diameter","Chest_depth","Chest_diameter","Elbow_diameter","Wrist_diameter","Knee_diameter","Ankle_diameter","Shoulder_girth","Chest_girth","Waist_girth","Navel_girth","Hip_girth","Thigh_girth","Bicep_girth","Forearm_girth","Knee_girth","Calf_max_girth","Ankle_min_girth","Wrist_min_girth","Age","Weight","Height","Gender")    
+names(body) <- BodyMeasurements
+head(body)
+summary(body)
+boxplot(body)
+
+###change wide format to long format, tidy data: one row - one observation (important point)
+library(reshape2)
+obesitylong <- melt(obesity)
+obesitylong
+plot(obesitylong$value~obesitylong$variable)
+
+#Summarize a variable by binning (important point)
+breaks <- seq(min(body$Age),max(body$Age), 5)  #separate age to 5 levels
+Age_group <- cut(body$Age, breaks)
+body$Age_group <- Age_group
+
+plot(body$Thigh_girth,body$Bicep_girth, pch=body$Gender, col=body$Age_group)
+plot(body$Thigh_girth,body$Bicep_girth, pch=body$Gender, col=body$Age_group, cex=(body$Weight/10)) 
+
+##simple example
+x <- 1:10
+set.seed(23)
+y <- x+rnorm(10)
+plot(x,y)  #position
+plot(x,y,col=x) #color
+plot(x,y,col=x,cex = x) #size
+plot(x,y,col=x,cex = x, pch = x) #pch: forms
+
+
+
+
