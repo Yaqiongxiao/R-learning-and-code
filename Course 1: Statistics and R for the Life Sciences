@@ -1,3 +1,48 @@
+##Week 1
+
+tab = read.csv('msleep_ggplot2.csv')
+class(tab)
+head(tab)
+dim(tab)
+?read.csv
+View(tab)
+colnames(tab)  #the name of columns
+tab$name  #extract one of the columns, which return a vector
+# c function, vectors can be combined
+c(tab$sleep_total,1000) #add a final number to the sleep totals
+plot(tab$brainwt,tab$sleep_total,log = 'x')
+scatter.smooth(tab$brainwt,tab$sleep_total)
+summary(tab$sleep_total) 
+tab[c(1,2)] #the first two elements of the data
+tab[c(1,2),] #the first two rows, all columns
+tab[tab$sleep_total>18,] #the rows where the total sleep is greater than 18 hours
+mean(c(tab[tab$sleep_total>18,])$sleep_total) # the average total sleep for the animals with total sleep greater than 18 hours
+
+which(tab$sleep_total>18) #gives the numeric index that satisfies a logical question
+tab$sleep_total[which(tab$sleep_total>18)[1]] #index the original vector with that number
+which(tab$sleep_total>18&tab$sleep_rem<3)
+
+rank(tab$sleep_total)  #starts from 1
+sort(tab$sleep_total)  #the ascending or descending order
+order(tab$sleep_total)  #returns a position of the ascending or descending order
+tab$sleep_total[order(tab$sleep_total)] #index to the original vector, equal to sort(tab$sleep_total) 
+
+#match() is useful to find the index of the first match of a vector in a second vector
+match(c('Cow','Owl monkey','Cheetah'),tab$name)
+idx = match(c('Cow','Owl monkey','Cheetah'),tab$name)
+tab[idx,]
+match(c('Cotton rat'),tab$name)
+
+#split() is a function which takes a vector and splits it into a list, by grouping the 
+#the vector according to a factor
+s = split(tab$sleep_total,tab$order)
+s
+s[[17]]  #lists are indexed with double square brackets [[]]
+s[['Rodentia']]
+mean(split(tab$sleep_total,tab$order)[['Rodentia']])
+
+
+
 ## Week 3 Inference
 
 # Inference I
