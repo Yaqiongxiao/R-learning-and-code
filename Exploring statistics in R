@@ -85,5 +85,19 @@ plot(x,y,col=x,cex = x) #size
 plot(x,y,col=x,cex = x, pch = x) #pch: forms
 
 
+##visulisation hypotheses test in R
+x=seq(50,140,length=200)
+y1=dnorm(x,80, 10)
+plot(x,y1,type='l',lwd=2,col='red')
+y2=dnorm(x,110, 10)
+lines(x,y2,type='l',lwd=2,col='blue')
+cord.x1 <- c((round(qnorm(0.975, 80, 10))),seq((round(qnorm(0.975, 80, 10))), 120,1),120) 
+cord.y1 <- c(0,dnorm(seq((round(qnorm(0.975, 80, 10))), 120, 1), 80, 10),0) 
+polygon(cord.x1,cord.y1,col='red')
+cord.x2 <- c(50,seq(50,round(qnorm(0.025, 80, 10),1)),round(qnorm(0.025, 80, 10))) 
+cord.y2 <- c(0,dnorm(seq(50,round(qnorm(0.025, 80, 10),1)), 80, 10),0) 
+polygon(cord.x2,cord.y2,col='red')
+
+
 
 
